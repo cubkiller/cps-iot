@@ -1,1 +1,22 @@
 avada kedabra
+var http = require("http");
+var firmata = require("firmata");
+
+
+var board = new firmata.board("/dev/ttyACM0", function(){
+    board.pinMode(13, board.MODES.OUTPUT); //pin 13 as out
+});
+
+http.createServer(function(req, res) {
+    var parts = req.url.split("/"), //split request on / character
+    operator = parseInt(parts[1],10); //10 is radix - decimal notation
+    
+    if (operator == 0) {
+        board.digitalWrite(13, board.LOW);
+    }
+    else if (operator == 1) {
+        board.digitalWrite(13, board.HIGH);
+    }
+    res.writeHead(200, {"content-Type": "text/plain"}); //200=OK
+    res.end("The value of the operator is: " + operator);
+}).listen(8080, "172.16.22.146"); //listen on port 8080
