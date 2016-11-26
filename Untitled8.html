@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset = utf8>
+<html>
+    <head>
+        <title> example HW buttons </title>
+    </head>
+    <body>
+                <div id="divForPrint"></div>
+        <p></p>
+        PWM: <input id="pwm" value=100 />    
+<button id="buttonSendPWM" onClick="sendPWM()">sendPWM</button>
+<button id="buttonLeft" onClick="left()">left</button>
+<button id="buttonRight" onClick="right()">right</button>
+<button id="buttonStop" onClick="stop()">stop</button>
+
+        
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+        var divForPrint = document.getElementById('divForPrint'); // variable to print messages in div
+var numberOfLinesInLog = 10; // variable for the number of lines in log div
+var counterOfLogs = 0; // variable for counting the logs
+function log(msg) { // function to print messages to div with implemented scroll
+    var node=document.createElement("tr"); // we create variable node as tr (table row)
+    var textnode=document.createTextNode(counterOfLogs + " | " + msg); // create elem. with text
+    node.appendChild(textnode); // add to "node", i.e. table row
+    divForPrint.insertBefore(node, divForPrint.childNodes[0]); // insert into variable divForPrint -> document.getElementById("divForPrint");
+    if (counterOfLogs > numberOfLinesInLog-1) { // if there are more numbers as e.g. 10
+        divForPrint.removeChild(divForPrint.childNodes[numberOfLinesInLog]); // remove the oldest printout
+    }
+    counterOfLogs = counterOfLogs + 1; // increase the counter of logs
+}
+
+    var socket = io.connect("172.16.22.146:8080");
+socket.on('messageToClient', function(msg) { // when we receive the message
+    log(msg); // we print it to div
+});
+
+socket.on('disconnect', function() { // on disconnect
+    log("Disconnected from server"); // we print the status to div
+});
+      
+        socket.on("messageToClient", function(msg){
+            log(msg); //add msg
+        });
+        socket.on("Disconnect", function(){
+           log("Disconnected from server"); // we print the status to div 
+        });
+           
+
+ function sendPWM () {
+    var valuePWM = document.getElementById("pwm").value;
+    socket.emit("sendPWM", valuePWM);
+}
+
+function left () {
+    socket.emit("left", {"AIN1": 0, "AIN2": 1});
+}
+
+function right () {
+    socket.emit("right", {"AIN1": 1, "AIN2": 0});
+}
+
+function stop () {
+    socket.emit("stop", 0);
+}
+
+
+        </script>
+    </body>
+</html>
