@@ -71,6 +71,19 @@
  var y6 = new Array(); // array for y6 variable
  var canvas6;
  var ctx6;
+ // variable for Kp*P part
+ var x7 = new Array(); // array for x7 variable
+ var y7 = new Array(); // array for y7 variable
+ 
+ // variable for Ki*I part
+ var x8 = new Array(); // array for x8 variable
+ var y8 = new Array(); // array for y8 variable
+ 
+ // variable for Kd*D part
+ var x9 = new Array(); // array for x9 variable
+ var y9 = new Array(); // array for y9 variable
+  
+	 
 	 
 	  function load() { // function that is started, when we open the page
 	      // First graph initialization **********************
@@ -133,6 +146,24 @@
      for (var i=0; i<200; i++) {
          x6[i] = i; // for x values are 0, 1, 2, ...
          y6[i] = 0; // for y values are 0
+             };
+     
+     // initialize seventh graph arrays    
+     for (var i=0; i<200; i++) {
+         x7[i] = i; // for x values are 0, 1, 2, ...
+         y7[i] = 0; // for y values are 0
+     };
+     
+     // initialize eight graph arrays    
+     for (var i=0; i<200; i++) {
+         x8[i] = i; // for x values are 0, 1, 2, ...
+         y8[i] = 0; // for y values are 0
+     };
+     
+     // initialize ninth graph arrays    
+     for (var i=0; i<200; i++) {
+         x9[i] = i; // for x values are 0, 1, 2, ...
+         y9[i] = 0; // for y values are 0
 	      };
 	  };
 	 
@@ -251,22 +282,83 @@
 	 
 	      // Draw third graph END ************************************
      
-     // Draw canvas3 as X **********************************************
-     ctx3.clearRect(0, 0, canvas3.width, canvas3.height); // clear canvas only ONCE!
+// Draw canvas3 with three lines **********************************************
+ctx3.clearRect(0, 0, canvas3.width, canvas3.height); // clear canvas only ONCE!
+ctx3.lineWidth = "1";
+
      
-     // draw X
-     ctx3.lineWidth = "1";
-     ctx3.strokeStyle = "#add8e6";
-     ctx3.beginPath(); // beginning of the line
-     ctx3.lineTo(10, 10); // starting point
-     ctx3.lineTo(190, 90); // ending point
-     ctx3.stroke(); // to put it on the graph
-     ctx3.beginPath(); // beginning of the line
-     ctx3.lineTo(10, 90); // starting point
-     ctx3.lineTo(190, 10); // ending point
-     ctx3.stroke(); // to put it on the graph
-     // Draw canvas3 END ************************************
+     // add legend
+     ctx3.font = "11px Arial";
+     ctx3.fillText("KpE",55,10);
+     ctx3.strokeStyle = "#ff0000";
+     ctx3.beginPath(); // beginning of legend line draw
+     ctx3.lineTo(35, 6);
+     ctx3.lineTo(50, 6);
+     ctx3.stroke(); // end of legend line draw
  
+     ctx3.font = "11px Arial";
+     ctx3.fillText("KiIedt",105,10);
+     ctx3.strokeStyle = "#00ff00";
+     ctx3.beginPath(); // beginning of legend line draw
+     ctx3.lineTo(85, 6);
+     ctx3.lineTo(100, 6);
+     ctx3.stroke(); // end of legend line draw
+     
+     ctx3.font = "11px Arial";
+     ctx3.fillText("KdDe_dt",155,10);    
+     ctx3.strokeStyle = "#0000ff";
+     ctx3.beginPath(); // beginning of legend line draw
+     ctx3.lineTo(135, 6);
+     ctx3.lineTo(150, 6);
+     ctx3.stroke(); // end of legend line draw      
+ 
+     // Draw first line on canvas3
+     ctx3.strokeStyle = "#ff0000";
+     ctx3.beginPath(); // to start drawing new line
+     y7.splice(0, 1); // on the position 0 in the field y1 we erase one value
+     y7[199] = value.KpE; // new value is added at the end
+     for (var i=0; i<200; i++) {
+         ctx3.lineTo(x7[i], (100 - (100 + y7[i]) / 200 * 100)); // 0,0 x,y coordinate is in upper left corner
+     };
+     ctx3.stroke(); // to draw the line
+     
+     // add axis labels
+     ctx3.font = "10px Arial";
+     // x-axis label
+     ctx3.fillText("<-"+ 0 + "|" + 200 + "->", 155, 100-5); // display number of points on x-axis
+     // min on y-axis label:
+    	ctx3.fillText(100,5,11); // sicer zaokrozimo na dve decimalni mesti
+    	ctx3.fillText(-100,5,100-5);
+     // END Draw line 1 on canvas3 *************************************
+     
+     // Draw second line on canvas3 **********************************************
+
+
+     ctx3.lineWidth = "1";
+
+     ctx3.strokeStyle = "#00ff00";
+     ctx3.beginPath(); // to start drawing new line
+     y8.splice(0, 1); // on the position 0 in the field y2 we erase one value
+     y8[199] = value.KiIedt; // new value is added at the end
+     for (var i=0; i<200; i++) {
+         ctx3.lineTo(x8[i], (100 - (100 + y8[i]) / 200 * 100)); // 0,0 x,y coordinate is in upper left corner
+     };
+     ctx3.stroke(); // to draw the line
+     // END draw second line on canvas3 ************************************ 
+ 
+     // Draw third line on canvas3 **********************************************
+     ctx3.lineWidth = "1";
+     ctx3.strokeStyle = "#0000ff";
+     ctx3.beginPath(); // to start drawing new line
+     y9.splice(0, 1); // on the position 0 in the field y2 we erase one value
+     y9[199] = value.KdDe_dt; // new value is added at the end
+     for (var i=0; i<200; i++) {
+         ctx3.lineTo(x9[i], (100 - (100 + y9[i]) / 200 * 100)); // 0,0 x,y coordinate is in upper left corner
+     };
+     ctx3.stroke(); // to draw the line
+     // END draw third line on canvas3 ************************************     
+ 
+     // Draw graph with three lines on canvas3 END ************************************ 
      
      // Draw canvas4 graph for P part **********************************************
      ctx4.clearRect(0, 0, canvas4.width, canvas4.height); // clear canvas only ONCE!
@@ -357,7 +449,7 @@
      
      // draw line at coordinate 0
  ctx6.lineWidth = "1";
-     ctx6.strokeStyle = "#90ee90"; // light green
+     ctx6.strokeStyle = "add8e6"; // light blue
      ctx6.beginPath(); // beginning of the line
      ctx6.lineTo(0, 50); // starting point
      ctx6.lineTo(200, 50); // ending point
@@ -366,7 +458,7 @@
      // put on the legend
      ctx6.font = "11px Arial";
      ctx6.fillText("dError/dt",70,10);
-     ctx6.strokeStyle = "#00ff00";
+     ctx6.strokeStyle = "#0000ff";
      ctx6.beginPath(); // beginning of legend line draw
      ctx6.lineTo(50, 6);
      ctx6.lineTo(65, 6);
@@ -374,7 +466,7 @@
      
      // draw I
      ctx6.lineWidth = "1";
-     ctx6.strokeStyle = "#00ff00"; // set green color
+     ctx6.strokeStyle = "#0000ff"; // set green color
      ctx6.beginPath(); // to start drawing new line
      y6.splice(0, 1); // on the position 0 in the field y3 we erase one value
      y6[199] = value.dErr; // new value is added at the end

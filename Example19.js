@@ -29,6 +29,11 @@ var dErr = 0; // difference of error
 var lastErr = 0; // to keep the value of previous error
 var controlAlgorithmStartedFlag = 0; // flag in global scope to see weather ctrlAlg has been started
 var intervalCtrl; // var for setInterval in global space
+var KpE = 0; // multiplication of Kp x error
+var KiIedt = 0; // multiplication of Ki x integral of error
+var KdDe_dt = 0; // multiplication of Kd x differential of error i.e.e Derror/dt
+
+
 http.listen(8080); // determine on which port to listen (8080)
 console.log("Starting the system"); // print the message to the console
 var board = new firmata.Board("/dev/ttyACM0", function(){ // ACM Abstract Control Model for serial communication with Arduino (could be USB)
@@ -91,7 +96,11 @@ var board = new firmata.Board("/dev/ttyACM0", function(){ // ACM Abstract Contro
 	          err = desiredValue - actualValue; // error
 	          errSum += err; // sum of errors, like integral
           dErr = err - lastErr; // difference of error
-	          pwm = parameters.Kp1*err + parameters.Ki1*errSum + parameters.Kd1*dErr;
+         // for sending to client we put the parts to global scope
+         KpE=parameters.Kp1*err;
+         KiIedt=parameters.Ki1*errSum;
+         KdDe_dt=parameters.Kd1*dErr;
+         pwm = KpE + KiIedt + KdDe_dt; // above parts are used
 	          lastErr = err; // save the value for the next cycle
 	          if(pwm > pwmLimit) {pwm = pwmLimit}; // to limit the value for pwm / positive
           if(pwm < -pwmLimit) {pwm = -pwmLimit}; // to limit the value for pwm / negative
@@ -109,8 +118,10 @@ var board = new firmata.Board("/dev/ttyACM0", function(){ // ACM Abstract Contro
         "pwm": pwm,
         "err": err,
         "errSum": errSum,
-     "dErr": dErr
-	      });
+     "dErr": dErr,
+     "KpE": KpE,
+     "KiIedt": KiIedt,
+     "KdDe_dt": KdDe_dt	      });
  
      
      
